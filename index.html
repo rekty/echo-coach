@@ -1,0 +1,157 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Echo Coach — practise speaking and singing</title>
+<meta name="description" content="Record a line or a short melody and get instant coaching from Pollinations speech, text and voice models.">
+<link rel="stylesheet" href="styles.css">
+<script defer src="https://cdn.jsdelivr.net/npm/@pollinations/ui@0.1.0-alpha.20/dist/connect.js"></script>
+</head>
+<body>
+<div class="glow" aria-hidden="true"></div>
+
+<header class="top">
+  <div class="brand">
+    <span class="mark" aria-hidden="true"></span>
+    <div>
+      <h1>Echo Coach</h1>
+      <p class="tag">speak &amp; sing, then hear what to fix</p>
+    </div>
+  </div>
+  <div class="connect">
+    <polli-connect budget="5" expiry="7"></polli-connect>
+  </div>
+</header>
+
+<main>
+  <section class="intro">
+    <p class="kicker">Speech-to-text · pitch tracking · voice feedback</p>
+    <p class="lede">
+      Record a line or a short melody. Echo Coach transcribes what you said, measures how close your
+      pitch landed, and answers with three things to try next. Speech, text and voice come from
+      Pollinations, paid from your own balance.
+    </p>
+  </section>
+
+  <div class="tabs" role="tablist" aria-label="Practice mode">
+    <button class="tab is-active" id="tab-speak" data-mode="speak" role="tab" aria-selected="true" aria-controls="panel-speak">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a3 3 0 0 0-3 3v6a3 3 0 0 0 6 0V6a3 3 0 0 0-3-3Z"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg>
+      Speak
+    </button>
+    <button class="tab" id="tab-sing" data-mode="sing" role="tab" aria-selected="false" aria-controls="panel-sing">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 18V6l10-2v12"/><circle cx="6.5" cy="18" r="2.5"/><circle cx="16.5" cy="16" r="2.5"/></svg>
+      Sing
+    </button>
+  </div>
+
+  <p id="gate" class="gate" role="status">
+    Connect Pollinations above to spend from your own balance — no key to paste, nothing stored on a server.
+  </p>
+
+  <!-- SPEAK -->
+  <section id="panel-speak" class="panel is-active" role="tabpanel" aria-labelledby="tab-speak">
+    <article class="card phrase-card">
+      <div class="card-head">
+        <span class="eyebrow">Read this out loud</span>
+        <button id="new-phrase" class="ghost" type="button">Another line</button>
+      </div>
+      <p id="phrase" class="phrase">The sixth sheikh's sixth sheep is sick.</p>
+      <p id="phrase-hint" class="hint">Tongue twister · sibilants</p>
+    </article>
+
+    <article class="card rec-card">
+      <div class="rec-row">
+        <button id="speak-rec" class="rec" type="button" aria-label="Start recording">
+          <span class="rec-dot" aria-hidden="true"></span>
+          <span id="speak-rec-label">Record 12s</span>
+        </button>
+        <div class="meter" aria-hidden="true"><i id="speak-level"></i></div>
+        <span id="speak-timer" class="timer">0.0s</span>
+      </div>
+      <p class="rec-note">Speak at a normal volume, about a hand's width from the mic.</p>
+    </article>
+
+    <div id="speak-result" class="results" hidden>
+      <article class="card">
+        <div class="card-head">
+          <span class="eyebrow">Transcript</span>
+          <span id="speak-score" class="pill">—</span>
+        </div>
+        <p id="speak-transcript" class="transcript"></p>
+        <p id="speak-diff" class="diff"></p>
+        <div class="row">
+          <button id="speak-play" class="ghost" type="button">Play my take</button>
+          <button id="speak-again" class="ghost" type="button">Record again</button>
+        </div>
+      </article>
+
+      <article class="card coach-card">
+        <div class="card-head">
+          <span class="eyebrow">Coach</span>
+          <button id="speak-voice" class="ghost" type="button">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9v6h4l5 4V5L8 9H4Z"/><path d="M17 8a5 5 0 0 1 0 8"/></svg>
+            Speak it
+          </button>
+        </div>
+        <h3 id="speak-headline" class="headline"></h3>
+        <ul id="speak-tips" class="tips"></ul>
+      </article>
+    </div>
+  </section>
+
+  <!-- SING -->
+  <section id="panel-sing" class="panel" role="tabpanel" aria-labelledby="tab-sing" hidden>
+    <article class="card phrase-card">
+      <div class="card-head">
+        <span class="eyebrow">Sing these five notes</span>
+        <button id="new-melody" class="ghost" type="button">Another melody</button>
+      </div>
+      <p id="melody-name" class="phrase">C major climb</p>
+      <div id="melody-notes" class="notes"></div>
+      <p class="hint">Hold each note for about a second, on "ah". Low notes are easier in a relaxed chest voice.</p>
+    </article>
+
+    <article class="card rec-card">
+      <div class="rec-row">
+        <button id="sing-rec" class="rec" type="button" aria-label="Start singing">
+          <span class="rec-dot" aria-hidden="true"></span>
+          <span id="sing-rec-label">Record 6s</span>
+        </button>
+        <div class="meter" aria-hidden="true"><i id="sing-level"></i></div>
+        <span id="sing-timer" class="timer">0.0s</span>
+      </div>
+      <p id="sing-live" class="rec-note">Waiting for the microphone.</p>
+    </article>
+
+    <article class="card trace-card">
+      <div class="card-head">
+        <span class="eyebrow">Pitch trace</span>
+        <span id="sing-score" class="pill">—</span>
+      </div>
+      <canvas id="sing-canvas" width="760" height="240"></canvas>
+      <div id="sing-notes" class="per-note"></div>
+    </article>
+
+    <article id="sing-coach" class="card coach-card" hidden>
+      <div class="card-head"><span class="eyebrow">Coach</span></div>
+      <h3 id="sing-headline" class="headline"></h3>
+      <ul id="sing-tips" class="tips"></ul>
+    </article>
+  </section>
+</main>
+
+<footer>
+  <p>
+    Audio models: <code>microsoft/mai-transcribe-2</code> and <code>openai/tts-1</code> (free) ·
+    coaching: <code>openai/gpt-5.4-nano</code> (free) · paid models stay opt-in.
+  </p>
+  <p>
+    Recordings never leave your browser except as a transcription request. Nothing is stored server-side.
+    <a href="https://pollinations.ai/?ref=badge">Built on pollinations.ai</a>
+  </p>
+</footer>
+
+<script src="app.js"></script>
+</body>
+</html>
