@@ -1,6 +1,7 @@
 /* Echo Coach — speak or sing, then get coached.
- * Frontend only: the Pollinations key comes from <polli-connect> (BYOP),
- * so every request is billed to the signed-in listener's own balance.
+ * Frontend only: visitors sign in with Pollinations through <polli-connect>,
+ * which runs the /authorize consent flow and hands us a budget-scoped key;
+ * every request is billed to the signed-in listener's own balance.
  */
 (() => {
   "use strict";

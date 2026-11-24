@@ -23,7 +23,10 @@ paid from the listener's own Pollinations balance through the drop-in Connect bu
 Paid models stay opt-in: nothing in the app needs one. Pitch tracking for the sing mode is local DSP
 (autocorrelation), so it costs nothing and works offline.
 
-## Sign-in (Bring Your Own Pollen)
+## Sign-in (Pollinations Connect)
+
+Visitors sign in with their Pollinations account. They never supply or create a key for this app, and
+there is no key field anywhere in the UI.
 
 The header hosts the official drop-in button:
 
@@ -32,9 +35,15 @@ The header hosts the official drop-in button:
 <polli-connect budget="5" expiry="7"></polli-connect>
 ```
 
-`app.js` reads `apiKey` from the element's `change` event and sends it as `Authorization: Bearer sk_…`.
-The key lives in the element's own storage; this app never writes it anywhere else and there is no server
-that could see a recording.
+Clicking **Connect** opens Pollinations Connect — the `/authorize` consent screen on
+`enter.pollinations.ai`. The visitor signs in with Pollinations, sees this app's origin, and approves a
+budget cap (5 pollen) and a 7-day expiry for it. The element runs that OAuth flow (PKCE) against the
+consent screen and, once approved, exposes the resulting scoped app key on its `apiKey` property and
+`change` event.
+
+`app.js` reads that property, keeps the value in memory for the session, and sends it as
+`Authorization: Bearer …` on requests to `gen.pollinations.ai`. There is no backend of ours that could
+see the key or a recording.
 
 ## How a take flows
 
